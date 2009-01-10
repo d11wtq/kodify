@@ -1,0 +1,79 @@
+/** Kodify Theme: Blackboard */
+
+.kodify {
+  background: #111122;
+  color: #ffffff;
+}
+
+.kodify .control {
+  color: #ffff00;
+}
+
+.kodify .operator {
+  color: #dddd44;
+}
+
+.kodify .predefined {
+  color: #ff5588;
+}
+
+.kodify .predefined.variable {
+  color: #ff5588;
+}
+
+.kodify .predefined.function {
+  font-weight: bold;
+}
+
+.kodify .keyword {
+  color: #ffaa44;
+}
+
+.kodify .identifier {
+  color: auto;
+}
+
+.kodify .identifier.variable {
+  color: #ff88ff;
+}
+
+.kodify .string {
+  color: #22dd22;
+}
+
+.kodify .string.literal {
+  color: #44aa44;
+}
+
+.kodify .number {
+  color: #7777ff;
+}
+
+.kodify .number.hexadecimal {
+  color: #aaaaff;
+}
+
+.kodify .comment {
+  color: #aaaaaa;
+}
+
+.kodify .regex {
+  color: #66ff88;
+}
+
+/* Markup language constructs */
+
+.kodify .markup.xml,
+.kodify .markup.doctype {
+  font-style: italic;
+  color: #ff5588;
+}
+
+.kodify .markup.tag {
+  font-weight: bold;
+  color: #ffaa44;
+}
+
+.kodify .markup.attribute {
+  color: #ffff00;
+}
