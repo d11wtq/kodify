@@ -21,6 +21,8 @@ Kodify.lang("js")
     "var" : 1,
     "function" : 1,
     "return" : 1,
+    "case" : 1,
+    "default" : 1,
     "break" : 1,
     "continue" : 1,
     "throw" : 1,
@@ -42,7 +44,8 @@ Kodify.lang("js")
     "if" : 1,
     "else" : 1,
     "try" : 1,
-    "catch" : 1
+    "catch" : 1,
+    "switch" : 1
   };
 
   var objects = {
@@ -89,7 +92,11 @@ Kodify.lang("js")
 
 .rule(/[\(\{]/, Lx.INITIAL).onmatch(function() {
   Kodify.flag("regexAllowed", true);
-  Kodify.unstyled();
+  Kodify.bracketPair();
+})
+
+.rule(/[\[\]\}\)]/, Lx.INITIAL).onmatch(function() {
+  Kodify.bracketPair();
 })
 
 .rule(/(?:\\?[^\/\n\\]|\\\/|\\\\)+/, Lx.REGEXP).onmatch(function() {

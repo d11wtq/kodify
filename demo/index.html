@@ -12,6 +12,7 @@
     <script type="text/javascript" src="../js/lang/js.js"></script>
     <script type="text/javascript" src="../js/lang/php.js"></script>
     <script type="text/javascript" src="../js/lang/html.js"></script>
+    <script type="text/javascript" src="../js/lang/css.js"></script>
     <style type="text/css">
     pre {
       margin: 20px;
@@ -48,6 +49,7 @@
             <option value="blackboard">Blackboard</option>
             <option value="cheery">Cheap &amp; Cheery</option>
             <option value="coffee">Coffee</option>
+            <option value="meadow">Summer Meadow</option>
           </select>
         </fieldset>
       </form>
@@ -179,10 +181,57 @@ foreach (array(1, 2, 3) as $k =&gt; $v) {
         </pre>
       </code>
     </div>
+    
+    <div class="example">
+      <h2>CSS</h2>
+      <code>
+        <pre class="kodify css">
+@import url('another/stylesheet.css');
+
+@media print {
+  
+  /*
+   This is a comment
+   */
+  body p.main {
+    font-color: black;
+  }
+  
+}
+
+* body>p {
+  line-height: 2em;
+  font-family: arial,sans-serif;
+}
+
+#someid {
+  float: left;
+}
+
+table td.number.currency {
+  font-weight: bold;
+  text-align: center;
+}
+
+div.note {
+  background: #fff url(/images/pen.png) right no-repeat;
+}
+
+h2 {
+  border-bottom: 1px solid #aaaaaa !important;
+}
+
+}
+        </pre>
+      </code>
+    </div>
+    
     <script type="text/javascript"><!--
     var selector = document.getElementById("themeselector");
+    var list =  document.getElementById("themelist");
     selector.style.display = "block";
-    document.getElementById('theme').href = '../themes/' + selector.options[selector.selectedIndex].value + '.css'
+    document.getElementById('theme').href = '../themes/' + list.options[list.selectedIndex].value + '.css'
     --></script>
+    
   </body>
 </html>

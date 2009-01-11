@@ -5,6 +5,11 @@
 .kodify {
 }
 
+.kodify .bracketpair {
+}
+.kodify .bracketpair.unpaired {
+}
+
 .kodify .control {
 }
 
@@ -71,4 +76,8 @@
 .kodify .markup.tag {
 }
 .kodify .markup.attribute {
+}
+.kodify .markup.class {
+}
+.kodify .markup.id {
 }

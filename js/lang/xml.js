@@ -1,8 +1,8 @@
 /*
- Kodify Language Specification for HTML.
+ Kodify Language Specification for XML.
  */
 
-Kodify.lang("html")
+Kodify.lang("xml")
 
 .state("XML_HEADER")
 .state("DOCTYPE")
@@ -56,12 +56,12 @@ Kodify.lang("html")
 
 .rule('<', Lx.INITIAL).onmatch(function() {
   Kodify.flag("tagNameFound", false);
-  Kodify.bracketPair();
+  Kodify.unstyled();
   Lx.PushState(Lx.TAG);
 })
 
 .rule('>', Lx.TAG).onmatch(function() {
-  Kodify.bracketPair();
+  Kodify.unstyled();
   Lx.PopState();
 })
 

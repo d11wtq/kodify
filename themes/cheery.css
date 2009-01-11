@@ -5,6 +5,19 @@
   color: #000000;
 }
 
+.kodify .bracketpair {
+  background: #ffffaa;
+  color: #222222;
+  cursor: default;
+}
+
+.kodify .bracketpair.unpaired {
+  background: none;
+  color: #ff0000;
+  border-bottom: 2px solid #ff0000;
+  cursor: default;
+}
+
 .kodify .control {
   font-weight: bold;
   color: #008800;
@@ -30,48 +43,17 @@
   text-decoration: underline;
   color: #0000aa;
 }
-.kodify .predefined.class {
-}
-.kodify .predefined.interface {
-}
-
-.kodify .identifier {
-}
-.kodify .identifier.variable {
-}
-.kodify .identifier.function {
-}
-.kodify .identifier.class {
-}
-.kodify .identifier.interface {
-}
 
 .kodify .string {
   color: #cc0000;
-}
-.kodify .string.literal {
-}
-.kodify .string.heredoc {
-}
-.kodify .string.escapedchar {
 }
 
 .kodify .number {
   color: #aa6600;
 }
-.kodify .number.hexadecimal {
-}
-.kodify .number.octal {
-}
-.kodify .number.float {
-}
 
 .kodify .comment {
   color: #666666;
-}
-.kodify .comment.multiline {
-}
-.kodify .comment.singleline {
 }
 
 .kodify .regex {
@@ -91,4 +73,12 @@
 }
 .kodify .markup.attribute {
   color: #0000aa;
+}
+.kodify .markup.class {
+  color: #0000aa;
+  font-style: italic;
+}
+.kodify .markup.id {
+  color: #666666;
+  text-decoration: underline;
 }

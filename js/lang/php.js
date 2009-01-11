@@ -11,6 +11,17 @@ Kodify.lang("php")
 .state("LITERAL")
 .state("MULTILINE_COMMENT")
 
+.before(function() {
+  var openPhp = Lx.In.indexOf("<?");
+  var closePhp = Lx.In.indexOf("?>");
+  //Code excerpt starts halfway through PHP block
+  if (closePhp >= 0 && closePhp < openPhp) {
+    Lx.PushState(Lx.PHP);
+  } else if (closePhp == -1 && openPhp == -1) {
+    Lx.PushState(Lx.PHP);
+  }
+})
+
 .rule(/\s\s*/, [Lx.INITIAL, Lx.PHP]).onmatch(function() {
   Kodify.unstyled();
 })
@@ -44,6 +55,10 @@ Kodify.lang("php")
     "final" : 1,
     "const" : 1,
     "function" : 1,
+    "case" : 1,
+    "default" : 1,
+    "break" : 1,
+    "continue" : 1,
     "return" : 1,
     "echo" : 1,
     "print" : 1,
@@ -69,6 +84,7 @@ Kodify.lang("php")
   var controls = {
     "for" : 1,
     "foreach" : 1,
+    "switch" : 1,
     "while" : 1,
     "do" : 1,
     "if" : 1,
@@ -193,13 +209,14 @@ Kodify.lang("php")
   Kodify.className("comment singleline");
 })
 
+.rule(/[\[\]\{\}\(\)]/, Lx.PHP).onmatch(function() {
+  Kodify.bracketPair();
+})
+
 .rule(/[\x00-\xFF]/, [Lx.INITIAL, Lx.PHP]).onmatch(function() {
   if (Lx.START == Lx.INITIAL) {
-    while (0 > Lx.Text.indexOf("<?")) {
-      Lx.Text += Lx.Input();
-      ++Lx.Leng;
-    }
-    if (Lx.Text.indexOf("<?") > 0) {
+    Kodify.continueUntil("<?");
+    if (Lx.Text.substr(Lx.Text.length - 2) == "<?") {
       Lx.Less(Lx.Leng - 2);
     }
   }

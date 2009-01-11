@@ -9,6 +9,13 @@
 
 /** Config setting for the class needed for kodify to operate */
 var KodifyClassName = "kodify";
+
+/**
+ * The default before() routine.
+ * 
+ * @see {@link KodifyLanguage#before}
+ */
+var KodifyPreprocess = function(){};
  
 /**
  * A programming language specification, wrapping the "Lx" project.
@@ -25,6 +32,9 @@ var KodifyLanguage = function KodifyLanguage(name) {
   this.name = name;
   
   /** @private */
+  var _before = KodifyPreprocess;
+  
+  /** @private */
   var _scanner = new LxAnalyzer();
   
   /** @private */
@@ -37,6 +47,19 @@ var KodifyLanguage = function KodifyLanguage(name) {
   var self = this;
   
   /**
+   * Specify a callback procedure to run before the full scan.
+   * 
+   * This can be used to set an initial state dynamically based on Lx.In.
+   * 
+   * @param {Function} callback
+   * @return The current instance for method chaining
+   */
+  this.before = function before(callback) {
+    _before = callback;
+    return self;
+  };
+  
+  /**
    * Declare a new flag named flagName having value v.
    * 
    * @param {String} flagName The name of the flag
@@ -45,7 +68,7 @@ var KodifyLanguage = function KodifyLanguage(name) {
    * 
    * @see {@link #flag}
    */
-  this.addflag = function flag(flagName, v) {
+  this.addflag = function addflag(flagName, v) {
     _flags[flagName] = v;
     return self;
   };
@@ -124,6 +147,7 @@ var KodifyLanguage = function KodifyLanguage(name) {
       ? element.textContent
       : element.innerText
     );
+    _before();
     while ((0 != _scanner.lex())) ;
     
     _flags = originalFlags;
@@ -156,14 +180,25 @@ var KodifyBuilder = function KodifyBuilder(element) {
    * 
    * @param {String} text The text to append
    * @param {String} className The class name to apply to the text
+   * @param {String} id The ID of the token in the DOM
+   * @param {Object} eventListeners As an object map where { type : callback }
    */
-  this.append = function append(text, className) {
+  this.append = function append(text, className, id, eventListeners) {
+    eventListeners = eventListeners || {};
     var s = document.createElement("span");
     if (className) {
       s.className = className;
     }
+    if (id) {
+      s.id = id;
+    }
     var t = document.createTextNode(text);
     s.appendChild(t);
+    
+    for (var type in eventListeners) {
+      s["on" + type] = eventListeners[type];
+    }
+    
     _context.appendChild(s);
   };
   
@@ -176,6 +211,148 @@ var KodifyBuilder = function KodifyBuilder(element) {
   };
   
 };
+
+/**
+ * Handles the pairing of brackets in source code.
+ */
+var KodifyBracketManager = new (function KodifyBracketManager() {
+  
+  /** @private */
+  var _pairs = {
+    '{' : '}',
+    '}' : '{',
+    '[' : ']',
+    ']' : '[',
+    '(' : ')',
+    ')' : '(',
+    '<' : '>',
+    '>' : '<'
+  };
+  
+  /** @private */
+  var _stack = {
+    '{' : [],
+    '[' : [],
+    '(' : [],
+    '<' : []
+  };
+  
+  /** @private */
+  var _counts = {
+    '{' : 0,
+    '[' : 0,
+    '(' : 0,
+    '<' : 0
+  };
+  
+  /** @private */
+  var _names = {
+    "{" : "kodify_open_curly",
+    "}" : "kodify_close_curly",
+    "[" : "kodify_open_bracket",
+    "]" : "kodify_close_bracket",
+    "(" : "kodify_open_paren",
+    ")" : "kodify_close_paren",
+    "<" : "kodify_open_angle",
+    ">" : "kodify_close_angle"
+  };
+  
+  /** @private */
+  var self = this;
+  
+  /**
+   * Get the sequence ID for this bracket.
+   * 
+   * @param {String} c The bracket character
+   * @return The sequence ID
+   */
+  this.sequenceOf = function sequenceOf(c) {
+    if (c in _stack) {
+      return _stackPush(c);
+    } else if (c in _pairs) {
+      return _stackPop(_pairs[c]);
+    }
+  };
+  
+  /**
+   * Get the name associated with this bracket.
+   * 
+   * @param {String} c The bracket character
+   * @return A name describing the bracket
+   */
+  this.nameOf = function nameOf(c) {
+    return _names[c];
+  };
+  
+  /**
+   * Event handler for bracket pairing (on state).
+   */
+  this.revealPair = function revealPair(e) {
+    var matchingToken = document.getElementById(_getMatchingId(this.id));
+    if (matchingToken) {
+      this.className += " bracketpair";
+      matchingToken.className += " bracketpair";
+    } else {
+      this.className += " bracketpair unpaired";
+    }
+  };
+  
+  /**
+   * Event handler for bracket pairing (off state).
+   */
+  this.hidePair = function hidePair(e) {
+    var matchingToken = document.getElementById(_getMatchingId(this.id));
+    this.className = this.className.replace(/\b(?:bracketpair|unpaired)\b/g, '');
+    if (matchingToken) {
+      matchingToken.className = matchingToken.className.replace(/\b(?:bracketpair|unpaired)\b/g, '');
+    }
+  };
+  
+  /** @private */
+  var _getMatchingId = function _getMatchingId(id) {
+    for (var bracket in _names) {
+      if (id.substr(0, _names[bracket].length) == _names[bracket]) {
+        return id.replace(
+          new RegExp("^" + _names[bracket]), _names[_getOpposite(bracket)]
+        );
+      }
+    }
+  };
+  
+  /** @private */
+  var _getOpposite = function _getOpposite(c) {
+    for (var left in _pairs) {
+      if (c == left) {
+        return _pairs[c];
+      } else if (c == _pairs[left]) {
+        return left;
+      }
+    }
+  };
+  
+  /** @private */
+  var _stackPush = function _stackPush(c) {
+    if (c in _stack) {
+      _stack[c][_stack[c].length] = ++_counts[c];
+      return _counts[c];
+    } else {
+      throw "Only opening brackets can be pushed onto the stack '" + c + "'";
+    }
+  };
+  
+  /** @private */
+  var _stackPop = function _stackPop(c) {
+    if (_stack[c].length == 0) {
+      return;
+    }
+    
+    var count = _stack[c][_stack[c].length -1];
+    delete _stack[c][_stack[c].length -1];
+    --_stack[c].length;
+    return count;
+  };
+  
+});
 
 /**
  * The globally accessible Kodify instance.
@@ -331,6 +508,23 @@ var Kodify = {
    */
   className : function className(cls) {
     this.builder.append(this.scanner.Text, cls);
+  },
+  
+  /**
+   * Show matching brace pairs on hover.
+   * 
+   * @param {String} cls Class name to apply to the token
+   */
+  bracketPair : function bracketPair(cls) {
+    var count = KodifyBracketManager.sequenceOf(this.scanner.Text);
+    var name = KodifyBracketManager.nameOf(this.scanner.Text);
+    
+    this.builder.append(this.scanner.Text, cls, name + count,
+      {
+        "mouseover" : KodifyBracketManager.revealPair,
+        "mouseout" : KodifyBracketManager.hidePair
+      }
+    );
   },
   
   /**
