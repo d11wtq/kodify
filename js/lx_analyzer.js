@@ -426,6 +426,7 @@ var LxAnalyzer = function LxAnalyzer() {
    * @param {String} input
    */
   this.Restart = function Restart(input) {
+    Lx = self;
     self.In = input;
     self.Out = '';
     self.Text = '';
