@@ -95,6 +95,11 @@ Kodify.lang("js")
   Kodify.bracketPair();
 })
 
+.rule(':', Lx.INITIAL).onmatch(function() {
+  Kodify.flag("regexAllowed", true);
+  Kodify.unstyled();
+})
+
 .rule(/[\[\]\}\)]/, Lx.INITIAL).onmatch(function() {
   Kodify.bracketPair();
 })
@@ -152,7 +157,7 @@ Kodify.lang("js")
   Lx.PopState();
 })
 
-.rule(/(?:\/\/|#).+/, Lx.INITIAL).onmatch(function() {
+.rule(/(?:\/\/).+/, Lx.INITIAL).onmatch(function() {
   Kodify.flag("regexAllowed", true);
   Kodify.className("comment singleline");
 })

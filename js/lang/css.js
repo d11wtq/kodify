@@ -153,7 +153,7 @@ Kodify.lang("css")
   Kodify.className("comment multiline");
 })
 
-.rule('"', [Lx.INITIAL, Lx.FUNCTION_ARGS, Lx.DIRECTIVE]).onmatch(function() {
+.rule('"', [Lx.INITIAL, Lx.FUNCTION_ARGS, Lx.DIRECTIVE, Lx.VALUE]).onmatch(function() {
   Kodify.className("string");
   Lx.PushState(Lx.DOUBLE_STRING);
 })
@@ -167,7 +167,7 @@ Kodify.lang("css")
   Lx.PopState();
 })
 
-.rule('\'', [Lx.INITIAL, Lx.FUNCTION_ARGS]).onmatch(function() {
+.rule('\'', [Lx.INITIAL, Lx.FUNCTION_ARGS, Lx.FUNCTION_ARGS, Lx.VALUE]).onmatch(function() {
   Kodify.className("string");
   Lx.PushState(Lx.SINGLE_STRING);
 })

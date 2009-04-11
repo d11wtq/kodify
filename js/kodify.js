@@ -142,11 +142,18 @@ var KodifyLanguage = function KodifyLanguage(name) {
     Kodify.scanner = _scanner;
     Kodify.builder = new KodifyBuilder(element);
     
+    //This following trick preserves white-space in innerText in IE
+    var cloned = element.cloneNode(true);
+    var pre = document.createElement("pre");
+    pre.appendChild(cloned);
+    var textContent = pre.textContent
+      ? pre.textContent
+      : pre.innerText;
+    delete pre;
+    delete cloned;
+    
     _scanner.Begin(_scanner.INITIAL);
-    _scanner.Restart(element.textContent
-      ? element.textContent
-      : element.innerText
-    );
+    _scanner.Restart(textContent);
     _before();
     while ((0 != _scanner.lex())) ;
     
@@ -602,6 +609,7 @@ var Kodify = {
 };
 
 //Make sure kodify runs when the page is loaded
+// TODO: Stop using window.onload directly... use addEvent() and co.
 window.onload = function () {
   Kodify.beautify();
 };
